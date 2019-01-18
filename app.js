@@ -2,8 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const graphQlHttp = require("express-graphql");
 const { buildSchema } = require("graphql");
+const mongoose = require("mongoose");
 
 const app = express();
+
+const db = require("./config/keys").mongoURI;
 
 const events = [];
 
@@ -37,7 +40,7 @@ app.use(
         }
 
         schema {
-            query: RootQuery 
+            query: RootQuery
             mutation: RootMutation
         }
     `),
@@ -61,4 +64,12 @@ app.use(
   })
 );
 
-app.listen(3000);
+mongoose
+  .connect(db)
+  .then(() => {
+    console.log("MongoDB Connected");
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
